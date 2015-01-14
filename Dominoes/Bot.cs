@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Dominoes
 {
-    class Bot : Player
+    public class Bot : Player
     {
         const int DUMMYVAL = 1000000;
         int RecursiveCalls = 11;

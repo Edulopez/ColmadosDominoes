@@ -10,15 +10,15 @@ namespace Dominoes
     {
         static void Main(string[] args)
         {
-            Tuple<int, int> domino = new Tuple<int, int>(1, 2); ;
-            List<Tuple<int, int>> l = new List<Tuple<int, int>>();
-            l.Add(domino);
+            //Tuple<int, int> domino = new Tuple<int, int>(1, 2); ;
+            //List<Tuple<int, int>> l = new List<Tuple<int, int>>();
+            //l.Add(domino);
 
-            DominoBoard Board = new DominoBoard();
+            //DominoesBoard Board = new DominoesBoard();
 
-            Board.PrintGame();
-            Board.PlayDomino();
-            int x;
+            //Board.PrintGame();
+            //Board.PlayDomino();
+            //int x;
         }
         //private static T[] Shuffle<T>(T[] OriginalArray)
         //{

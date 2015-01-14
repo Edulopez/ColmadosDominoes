@@ -5,9 +5,11 @@ using System.Text;
 
 using System.Diagnostics;
 using System.Threading;
-namespace Dominoes
+using Dominoes;
+
+namespace DominoesConsoleUI
 {
-    class DominoBoard
+    class DominoesBoard
     {
 
         Bot P1;
@@ -15,7 +17,7 @@ namespace Dominoes
         List<string> TimesP = new List<string>();
         LinkedList<Tuple<int, int>> DominoGame;
 
-        public DominoBoard()
+        public DominoesBoard()
         {
             DominoGame = new LinkedList<Tuple<int, int>>();
 
@@ -156,7 +158,7 @@ namespace Dominoes
             Console.WriteLine("P4:  " + P4.PrintHand());
         }
 
-        public void PlayDomino()
+        public void PlayDomino() 
         {
             //if (DoblesCant(P1) >= 3 || DoblesCant(P2) >= 3 || DoblesCant(P3) >= 3 || DoblesCant(P4) >= 3)
             //{
