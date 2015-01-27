@@ -10,17 +10,17 @@ namespace Dominoes
     public class Player
     {
 
-        public List<Tuple<int, int>> Hand { get; set; }
-        public List<Tuple<int, int>> AvailableDominoes { get; set; }
+        public List<Dominoes.DominoeTile> Hand { get; set; }
+        public List<Dominoes.DominoeTile> AvailableDominoes { get; set; }
         public List<bool[]> Dominos_EnemyDontHave { get; set; }
         public List<List<int>> Dominos_EnemyHave { get; set; }
 
         public readonly int TypePlayer;
         public int[] EnemysHandCount;
-        public readonly int idPlayer; 
-        
+        public readonly int idPlayer;
 
-        public Player(List<Tuple<int, int>> StartHand, int TypeOfPlayer, int _idPlayer)
+
+        public Player(List<Dominoes.DominoeTile> StartHand, int TypeOfPlayer, int _idPlayer)
         {
             Hand = StartHand;
             idPlayer = _idPlayer;
@@ -45,35 +45,33 @@ namespace Dominoes
             }
         }
 
-        static public List<Tuple<int, int>> GetAvaiableDominoes(List<Tuple<int, int>> UsedDominoes)
+        static public List<Dominoes.DominoeTile> GetAvaiableDominoes(List<Dominoes.DominoeTile> UsedDominoes)
         {
-            List<Tuple<int, int>> Res = new List<Tuple<int, int>>();
+            List<Dominoes.DominoeTile> Res = new List<Dominoes.DominoeTile>();
             for (int i=0 ; i<7 ; i++)
             {
                 for (int j=i; j<7 ; j++)
                 {
-                    bool can = true;
+                    bool can = false;
                     for (int q = 0; q < UsedDominoes.Count; q++)
                     {
-                        if (i == UsedDominoes[q].Item1 && j == UsedDominoes[q].Item2)
-                            can = false;
-                        else if (j == UsedDominoes[q].Item1 && i == UsedDominoes[q].Item2)
-                            can = false;
+                        can = (UsedDominoes[q].Contains(i) && UsedDominoes[q].Contains(j));
+                        if (can) break;
                     }
-                    if (can) Res.Add(new Tuple<int, int>(i, j));
+                    if (can) Res.Add(new Dominoes.DominoeTile(i, j));
                 }
             }
             return Res;
         }
 
-        public bool CanPlay(LinkedList<Tuple<int, int>> ActualGame)
+        public bool CanPlay(LinkedList<Dominoes.DominoeTile> ActualGame)
         {
             if (ActualGame.Count == 0) return true;
 
             for (int i = 0; i < Hand.Count; i++)
             {
-                if (Hand[i].Item1 == ActualGame.First.Value.Item1 || Hand[i].Item2 == ActualGame.First.Value.Item1 ||
-                    Hand[i].Item1 == ActualGame.Last.Value.Item2 || Hand[i].Item2 == ActualGame.Last.Value.Item2)
+                if ( ActualGame.First.Value.Match(Hand[i]) 
+                    || ActualGame.Last.Value.Match(Hand[i]))
                     return true;
             }
             return false;
@@ -81,87 +79,81 @@ namespace Dominoes
 
         public string PrintHand()
         {
-            string res = "";
-            for (int i = 0; i < Hand.Count; i++)
-            {
-                res += Hand[i].Item1.ToString() + "|" + Hand[i].Item2.ToString() + " ";
-            }
-            return res;
+            return PrintHand(true);
         }
-        public string PrintHand(bool AllTogether)
-        {
-            if (AllTogether == false) return PrintHand();
 
+        public string PrintHand(bool Separator, string SpaceBtw =" ")
+        {
             string res = "";
             for (int i = 0; i < Hand.Count; i++)
             {
-                res += Hand[i].Item1.ToString()  + Hand[i].Item2.ToString();
+                res += Hand[i].GetDominoString(Separator) + SpaceBtw;
             }
             return res;
         }
 
-        public  Tuple<int, int> MakeAMove(LinkedList<Tuple<int, int>> ActualGame, int idHandDomino, char Side)
+        public DominoeTile MakeAMove(LinkedList<Dominoes.DominoeTile> ActualGame, int idHandDomino, char Side)
         {
+            
             if (idHandDomino == 0 || (Side != 'L' && Side != 'R')) return null;
             idHandDomino--;
 
-            Tuple<int, int> res = null;
+            DominoeTile res = null;
             if (ActualGame.Count==0)
             {
                 res = Hand[idHandDomino];
-                ActualGame.AddLast(new Tuple<int, int>(Hand[idHandDomino].Item1, Hand[idHandDomino].Item2));
+                ActualGame.AddLast(Hand[idHandDomino]);
                 Hand.RemoveAt(idHandDomino);
                 return res;
             } 
 
             if (Side == 'L')
             {
-                if (Hand[idHandDomino].Item1 == ActualGame.First.Value.Item1)
+                if (Hand[idHandDomino].BottomNumber == ActualGame.First.Value.TopNumber)
                 {
-                    res = new Tuple<int, int>(Hand[idHandDomino].Item2, Hand[idHandDomino].Item1);
-                    Hand.RemoveAt(idHandDomino);
+                    res = Hand[idHandDomino];
                     ActualGame.AddFirst(res);
                 }
-                else if (Hand[idHandDomino].Item2 == ActualGame.First.Value.Item1)
+                else if (Hand[idHandDomino].TopNumber == ActualGame.First.Value.TopNumber)
                 {
-                    res = new Tuple<int, int>(Hand[idHandDomino].Item1, Hand[idHandDomino].Item2);
-                    Hand.RemoveAt(idHandDomino);
+                    res = Hand[idHandDomino].SwipedDomino();
                     ActualGame.AddFirst(res);
                 }
             }
             else if (Side=='R')
             {
-                if (Hand[idHandDomino].Item1 == ActualGame.Last.Value.Item2)
+                if (Hand[idHandDomino].TopNumber == ActualGame.Last.Value.BottomNumber)
                 {
-                    res = new Tuple<int, int>(Hand[idHandDomino].Item1, Hand[idHandDomino].Item2);
-                    Hand.RemoveAt(idHandDomino);
+                    res = Hand[idHandDomino];
                     ActualGame.AddLast(res);
                 }
-                else if (Hand[idHandDomino].Item2 == ActualGame.Last.Value.Item2)
+                else if (Hand[idHandDomino].BottomNumber == ActualGame.Last.Value.BottomNumber)
                 {
-                    res = new Tuple<int, int>(Hand[idHandDomino].Item2, Hand[idHandDomino].Item1);
-                    Hand.RemoveAt(idHandDomino);
+                    res = Hand[idHandDomino].SwipedDomino();
                     ActualGame.AddLast(res);
                 }
             }
+
+            if (res != null)
+                Hand.RemoveAt(idHandDomino);
+
             return res;
         }
 
 
-        public void Learn(LinkedList<Tuple<int, int>> Game, int _IdPlayer, Tuple<int, int> EnemyDomino = null)
+        public void Learn(LinkedList<Dominoes.DominoeTile> Game, int _IdPlayer, Dominoes.DominoeTile EnemyDomino = null)
         {
             if (EnemyDomino == null)
             {
- //               Dominos_EnemyDontHave[_IdPlayer][(Game.First.Value.Item1)]=true;
-   //             Dominos_EnemyDontHave[_IdPlayer][(Game.Last.Value.Item2)]=true;
+                //Dominos_EnemyDontHave[_IdPlayer][(Game.First.Value.Item1)]=true;
+                //Dominos_EnemyDontHave[_IdPlayer][(Game.Last.Value.Item2)]=true;
                 return;
             }
 
             EnemysHandCount[_IdPlayer]--;
-            Tuple<int, int> copy = new Tuple<int, int>(EnemyDomino.Item2, EnemyDomino.Item1);
             for (int i = 0; i < AvailableDominoes.Count(); i++)
             {
-                if (AvailableDominoes[i] == EnemyDomino || AvailableDominoes[i] == copy)
+                if (AvailableDominoes[i] == EnemyDomino)
                 {
                     AvailableDominoes.RemoveAt(i);
                     break;
