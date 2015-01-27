@@ -15,20 +15,20 @@ namespace DominoesConsoleUI
         Bot P1;
         Bot P2, P3, P4;
         List<string> TimesP = new List<string>();
-        LinkedList<Tuple<int, int>> DominoGame;
+        LinkedList<Dominoes.DominoeTile> DominoGame;
 
         public DominoesBoard()
         {
-            DominoGame = new LinkedList<Tuple<int, int>>();
+            DominoGame = new LinkedList<Dominoes.DominoeTile>();
 
-            List<Tuple<int, int>> L = new List<Tuple<int, int>>();
-            List<Tuple<int, int>> Q = new List<Tuple<int, int>>();
+            List<Dominoes.DominoeTile> L = new List<Dominoes.DominoeTile>();
+            List<Dominoes.DominoeTile> Q = new List<Dominoes.DominoeTile>();
 
             for (int i = 0; i < 7; i++)
             {
                 for (int j = i; j < 7; j++)
                 {
-                    Q.Add(new Tuple<int,int>(i,j));
+                    Q.Add(new Dominoes.DominoeTile(i,j));
                 }
             }
             Shuffle(Q);
@@ -67,7 +67,7 @@ namespace DominoesConsoleUI
         /// </summary>
         /// <typeparam name="T">Array element type.</typeparam>
         /// <param name="array">Array to shuffle.</param>
-        public void Shuffle(List<Tuple<int,int>> array)
+        public void Shuffle(List<Dominoes.DominoeTile> array)
         {
 
             var random = _random;
@@ -76,7 +76,7 @@ namespace DominoesConsoleUI
                 // Pick random element to swap.
                 int j = random.Next(i); // 0 <= j <= i-1
                 // Swap.
-                Tuple<int, int> tmp = array[j];
+                Dominoes.DominoeTile  tmp = array[j];
                 array[j] = array[i - 1];
                 array[i - 1] = tmp;
             }

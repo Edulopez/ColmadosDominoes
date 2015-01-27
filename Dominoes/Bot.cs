@@ -110,6 +110,7 @@ namespace Dominoes
             }
             return map + idx;
         }
+
         private int GetBestMove(LinkedList<Tuple<int, int>> ActualGame, int depth, int finalDepth, int IsMe)
         {
             string idx = GetStringIndex(ActualGame);
