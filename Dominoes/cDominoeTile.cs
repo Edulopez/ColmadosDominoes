@@ -10,20 +10,28 @@ namespace Dominoes
         public readonly int TopNumber;
         public readonly int BottomNumber;
 
+        public int Points 
+        {
+            get
+            {
+                return TopNumber + BottomNumber;
+            }
+        }
+
         public DominoeTile(int TopN, int BotN)
         {
             TopNumber = TopN;
             BottomNumber = BotN;
         }
 
-        public string GetDominoeString( bool Separator = false)
+        public string GetDominoString( bool Separator = false)
         {
             string sep = "";
             if (Separator) sep = "|";
             return TopNumber.ToString() + sep + BottomNumber.ToString();
         }
 
-        string GetDominoeString(char SeparatorChar)
+        string GetDominoString(char SeparatorChar)
         {
             string sep = SeparatorChar.ToString();
             return TopNumber.ToString() + sep + BottomNumber.ToString();
@@ -34,8 +42,30 @@ namespace Dominoes
             return new DominoeTile(BottomNumber, TopNumber);
         }
 
+        public DominoeTile GetDominoInPosition(DominoeTile D, DominoBoardSide side)
+        {
+            if (D == null) return null;
+
+            if (side == DominoBoardSide.RigthSide)
+            {
+                if (D.BottomNumber == this.TopNumber)
+                    return this;
+                if (D.BottomNumber == this.BottomNumber)
+                    return this.SwipedDomino();
+            }
+            else //DominoBoardSide.LeftSide
+            {
+                if (D.TopNumber == this.TopNumber)
+                    return this.SwipedDomino();
+                if (D.TopNumber == this.BottomNumber)
+                    return this;
+            }
+            return null;
+        }
+
         public bool Match(DominoeTile b)
         {
+            if (b == null) return false;
             return (
                     TopNumber == b.TopNumber
                 || TopNumber == b.BottomNumber
@@ -44,51 +74,47 @@ namespace Dominoes
                 );
         }
 
-        //public DominoeTile GetMatchedPositionedDominoe(DominoeTile b)
-        //{
-        //    if (!Match(b))
-        //        return null;
-
-            
-        //}
         public bool Contains(int number)
         {
             return (number == TopNumber || number == BottomNumber);
         }
+
+
         #region "Operators"
 
-        public static bool operator ==(DominoeTile a, int b)
-        {
-            return
-            (
-                (a.TopNumber == b) || (a.BottomNumber == b)
-            );
-        }
-        public static bool operator !=(DominoeTile a, int b)
-        {
-            return
-            (
-                (a.TopNumber != b) && (a.BottomNumber != b)
-            );
-        }
-        public static bool operator ==(DominoeTile a, DominoeTile b)
-        {
-            return
-            (
-                ((a.TopNumber == b.TopNumber) && (a.BottomNumber == b.BottomNumber))
-                ||
-                ((a.BottomNumber == b.TopNumber) && (a.TopNumber == b.BottomNumber))
-            );
-        }
-        public static bool operator !=(DominoeTile a, DominoeTile b)
-        {
-            return
-            (
-                ((a.TopNumber != b.TopNumber) && (a.BottomNumber != b.BottomNumber))
-                ||
-                ((a.BottomNumber != b.TopNumber) && (a.TopNumber != b.BottomNumber))
-            );
-        }
+        //public static bool operator ==(DominoeTile a, int b)
+        //{
+        //    return
+        //    (
+        //        (a.TopNumber == b) || (a.BottomNumber == b)
+        //    );
+        //}
+        //public static bool operator !=(DominoeTile a, int b)
+        //{
+        //    return
+        //    (
+        //        (a.TopNumber != b) && (a.BottomNumber != b)
+        //    );
+        //}
+        //public static bool operator ==(DominoeTile a, DominoeTile b)
+        //{
+
+        //    return
+        //    (
+        //        ((a.TopNumber == b.TopNumber) && (a.BottomNumber == b.BottomNumber))
+        //        ||
+        //        ((a.BottomNumber == b.TopNumber) && (a.TopNumber == b.BottomNumber))
+        //    );
+        //}
+        //public static bool operator !=(DominoeTile a, DominoeTile b)
+        //{
+        //    return
+        //    (
+        //        ((a.TopNumber != b.TopNumber) && (a.BottomNumber != b.BottomNumber))
+        //        ||
+        //        ((a.BottomNumber != b.TopNumber) && (a.TopNumber != b.BottomNumber))
+        //    );
+        //}
 
         #endregion
 

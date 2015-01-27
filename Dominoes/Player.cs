@@ -82,12 +82,12 @@ namespace Dominoes
             return PrintHand(true);
         }
 
-        public string PrintHand(bool Separator)
+        public string PrintHand(bool Separator, string SpaceBtw =" ")
         {
             string res = "";
             for (int i = 0; i < Hand.Count; i++)
             {
-                res += Hand[i].GetDominoeString(Separator);
+                res += Hand[i].GetDominoString(Separator) + SpaceBtw;
             }
             return res;
         }
@@ -145,13 +145,12 @@ namespace Dominoes
         {
             if (EnemyDomino == null)
             {
- //               Dominos_EnemyDontHave[_IdPlayer][(Game.First.Value.Item1)]=true;
-   //             Dominos_EnemyDontHave[_IdPlayer][(Game.Last.Value.Item2)]=true;
+                //Dominos_EnemyDontHave[_IdPlayer][(Game.First.Value.Item1)]=true;
+                //Dominos_EnemyDontHave[_IdPlayer][(Game.Last.Value.Item2)]=true;
                 return;
             }
 
             EnemysHandCount[_IdPlayer]--;
-            //Tuple<int, int> copy = new Tuple<int, int>(EnemyDomino.Item2, EnemyDomino.Item1);
             for (int i = 0; i < AvailableDominoes.Count(); i++)
             {
                 if (AvailableDominoes[i] == EnemyDomino)

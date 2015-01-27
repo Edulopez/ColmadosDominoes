@@ -84,13 +84,13 @@ namespace DominoesConsoleUI
 
         public void PrintGame()
         {
-            LinkedListNode<Tuple<int, int>> Nodes = DominoGame.First;
+            LinkedListNode<DominoeTile> Nodes = DominoGame.First;
 
             Console.WriteLine("\n\n========================================================================");
             Console.Write(" ");
             for (int i = 0; i < DominoGame.Count; i++)
             {
-                Console.Write(Nodes.Value.Item1.ToString() + '|' + Nodes.Value.Item2.ToString() + " ");
+                Console.Write(Nodes.Value.GetDominoString(true) + " ");
                 Nodes = Nodes.Next;
             }
             Console.WriteLine();
@@ -100,8 +100,8 @@ namespace DominoesConsoleUI
            //Console.WriteLine(P3.PrintHand());
            //Console.WriteLine(P4.PrintHand());
         }
-      
-        Tuple<int, int> PlayerPlaying(Player P)
+
+        DominoeTile PlayerPlaying(Player P)
         {
             bool canPlay = P.CanPlay(DominoGame);
             if (!canPlay)
@@ -113,9 +113,10 @@ namespace DominoesConsoleUI
                 return null;
             }
 
-            Tuple<int, int> res = null;
-                Console.WriteLine("-----------------------------");
-                Console.WriteLine(P.PrintHand());
+            DominoeTile res = null;
+            Console.WriteLine("-----------------------------");
+            Console.WriteLine(P.PrintHand());
+
             while (res == null)
             {
                 Console.WriteLine("-----------------------------\n Digita el lado y el id de la ficha.");
@@ -123,22 +124,22 @@ namespace DominoesConsoleUI
                 int id = Convert.ToInt32(Console.ReadLine());
                 res =P.MakeAMove(DominoGame, id, (char)side);
             }
-            return res;//P.MakeAMove(DominoGame, id, char.Parse(side.ToString()));
+            return res;
         }
 
-        Tuple<int, int> PlayerPlaying(Bot B)
+        DominoeTile PlayerPlaying(Bot B)
         {
             Console.WriteLine("-----------------------------");
             Console.WriteLine(B.PrintHand());
             Console.WriteLine("-----------------------------\n");
-            Tuple<int, int> res;
+            DominoeTile res;
             // @TODO Eliminar el dummyMove
-            if (B.idPlayer == 0)
-                res = B.DummyMove(DominoGame);
-           else
-                res=B.MakeAMove(DominoGame);
+           // if (B.idPlayer == 0)
+           //     res = B.DummyMove(DominoGame);
+           //else
+            res=B.MakeAMove(DominoGame);
 
-            if (res == null) Console.WriteLine("El jugador " + (B.idPlayer+1).ToString() + " No va waching...\n");
+            if (res == null) Console.WriteLine("El jugador " + (B.idPlayer+1).ToString() + " No va.\n");
             return res;
         }
 
@@ -146,7 +147,7 @@ namespace DominoesConsoleUI
         {
             int dbs = 0;
             for (int i = 0; i < P1.Hand.Count; i++)
-                if (Pl.Hand[i].Item1 == Pl.Hand[i].Item2) dbs++;
+                if (Pl.Hand[i].TopNumber == Pl.Hand[i].BottomNumber) dbs++;
             return dbs;
         }
 
@@ -191,7 +192,7 @@ namespace DominoesConsoleUI
                 PrintGame();
 
                 PrintHands();
-                Tuple<int, int> res=null;
+                DominoeTile res = null;
                 Console.Read();
                 if (i == 0)
                 {
@@ -223,7 +224,7 @@ namespace DominoesConsoleUI
             }
         }
 
-        public void PlayersLearn(int idPlayer,Tuple<int, int> Moved)
+        public void PlayersLearn(int idPlayer, DominoeTile Moved)
         {
             if (idPlayer != 0)
                 P1.Learn(DominoGame, 0, Moved);

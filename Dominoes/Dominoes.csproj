@@ -49,8 +49,8 @@
   <ItemGroup>
     <Compile Include="Bot.cs" />
     <Compile Include="cDominoeTile.cs" />
+    <Compile Include="eDominoBoardSide.cs" />
     <Compile Include="Player.cs" />
-    <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
