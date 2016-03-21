@@ -64,14 +64,13 @@ namespace Dominoes
             return Res;
         }
 
-        public bool CanPlay(LinkedList<Dominoes.DominoeTile> ActualGame)
+        public bool CanPlay(LinkedList<Dominoes.DominoeTile> CurrentGame)
         {
-            if (ActualGame.Count == 0) return true;
+            if (CurrentGame.Count == 0) return true;
 
             for (int i = 0; i < Hand.Count; i++)
             {
-                if ( ActualGame.First.Value.Match(Hand[i]) 
-                    || ActualGame.Last.Value.Match(Hand[i]))
+                if ( CurrentGame.First.Value.Match(Hand[i]))
                     return true;
             }
             return false;
@@ -92,45 +91,45 @@ namespace Dominoes
             return res;
         }
 
-        public DominoeTile MakeAMove(LinkedList<Dominoes.DominoeTile> ActualGame, int idHandDomino, char Side)
+        public DominoeTile MakeAMove(LinkedList<Dominoes.DominoeTile> CurrentGame, int idHandDomino, char Side)
         {
             
             if (idHandDomino == 0 || (Side != 'L' && Side != 'R')) return null;
             idHandDomino--;
 
             DominoeTile res = null;
-            if (ActualGame.Count==0)
+            if (CurrentGame.Count==0)
             {
                 res = Hand[idHandDomino];
-                ActualGame.AddLast(Hand[idHandDomino]);
+                CurrentGame.AddLast(Hand[idHandDomino]);
                 Hand.RemoveAt(idHandDomino);
                 return res;
             } 
 
             if (Side == 'L')
             {
-                if (Hand[idHandDomino].BottomNumber == ActualGame.First.Value.TopNumber)
+                if (Hand[idHandDomino].BottomNumber == CurrentGame.First.Value.TopNumber)
                 {
                     res = Hand[idHandDomino];
-                    ActualGame.AddFirst(res);
+                    CurrentGame.AddFirst(res);
                 }
-                else if (Hand[idHandDomino].TopNumber == ActualGame.First.Value.TopNumber)
+                else if (Hand[idHandDomino].TopNumber == CurrentGame.First.Value.TopNumber)
                 {
                     res = Hand[idHandDomino].SwipedDomino();
-                    ActualGame.AddFirst(res);
+                    CurrentGame.AddFirst(res);
                 }
             }
             else if (Side=='R')
             {
-                if (Hand[idHandDomino].TopNumber == ActualGame.Last.Value.BottomNumber)
+                if (Hand[idHandDomino].TopNumber == CurrentGame.Last.Value.BottomNumber)
                 {
                     res = Hand[idHandDomino];
-                    ActualGame.AddLast(res);
+                    CurrentGame.AddLast(res);
                 }
-                else if (Hand[idHandDomino].BottomNumber == ActualGame.Last.Value.BottomNumber)
+                else if (Hand[idHandDomino].BottomNumber == CurrentGame.Last.Value.BottomNumber)
                 {
                     res = Hand[idHandDomino].SwipedDomino();
-                    ActualGame.AddLast(res);
+                    CurrentGame.AddLast(res);
                 }
             }
 

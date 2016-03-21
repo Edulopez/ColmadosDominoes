@@ -7,9 +7,19 @@ namespace Dominoes
 {
     public class DominoeTile
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public readonly int TopNumber;
+
+        /// <summary>
+        /// 
+        /// </summary>
         public readonly int BottomNumber;
 
+        /// <summary>
+        /// Points of the Tile. Points are the sum of the two numbres of the Dominoe Tile
+        /// </summary>
         public int Points 
         {
             get
@@ -18,12 +28,22 @@ namespace Dominoes
             }
         }
 
+        /// <summary>
+        /// Constructor of the Tile
+        /// </summary>
+        /// <param name="TopN">Top number</param>
+        /// <param name="BotN">Bottom Number</param>
         public DominoeTile(int TopN, int BotN)
         {
             TopNumber = TopN;
             BottomNumber = BotN;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Separator"></param>
+        /// <returns></returns>
         public string GetDominoString( bool Separator = false)
         {
             string sep = "";
@@ -31,17 +51,32 @@ namespace Dominoes
             return TopNumber.ToString() + sep + BottomNumber.ToString();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="SeparatorChar"></param>
+        /// <returns></returns>
         string GetDominoString(char SeparatorChar)
         {
             string sep = SeparatorChar.ToString();
             return TopNumber.ToString() + sep + BottomNumber.ToString();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public DominoeTile SwipedDomino()
         {
             return new DominoeTile(BottomNumber, TopNumber);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="D"></param>
+        /// <param name="side"></param>
+        /// <returns></returns>
         public DominoeTile GetDominoInPosition(DominoeTile D, DominoBoardSide side)
         {
             if (D == null) return null;
@@ -63,6 +98,11 @@ namespace Dominoes
             return null;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public bool Match(DominoeTile b)
         {
             if (b == null) return false;
@@ -74,6 +114,11 @@ namespace Dominoes
                 );
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="number"></param>
+        /// <returns></returns>
         public bool Contains(int number)
         {
             return (number == TopNumber || number == BottomNumber);

@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Dominoes
 {
+    /// <summary>
+    /// Enum of the dominoes Board side
+    /// </summary>
     public enum DominoBoardSide
     {
         LeftSide = 1,
