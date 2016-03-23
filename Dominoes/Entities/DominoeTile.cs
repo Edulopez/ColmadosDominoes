@@ -7,14 +7,9 @@ namespace Dominoes
 {
     public class DominoeTile
     {
-        /// <summary>
-        /// 
-        /// </summary>
+
         public readonly int TopNumber;
 
-        /// <summary>
-        /// 
-        /// </summary>
         public readonly int BottomNumber;
 
         /// <summary>

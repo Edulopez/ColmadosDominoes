@@ -24,7 +24,6 @@ namespace Dominoes
             {
                 return Hand == null? 0 : Hand.Sum(tile => tile.Points);
             }
-            private set;
         }
 
         public int[] EnemiesHandCount;
