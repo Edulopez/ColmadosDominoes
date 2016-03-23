@@ -107,7 +107,7 @@ namespace Dominoes.ConsoleUI
             if (!canPlay)
             {
                 Console.WriteLine("-----------------------------");
-                Console.WriteLine(P.PrintHand());
+                Console.WriteLine(P.GetHandString());
                 Console.WriteLine("-----------------------------\n No vas...");
                 Thread.Sleep(1500);
                 return null;
@@ -115,7 +115,7 @@ namespace Dominoes.ConsoleUI
 
             DominoeTile res = null;
             Console.WriteLine("-----------------------------");
-            Console.WriteLine(P.PrintHand());
+            Console.WriteLine(P.GetHandString());
 
             while (res == null)
             {
@@ -130,7 +130,7 @@ namespace Dominoes.ConsoleUI
         DominoeTile PlayerPlaying(Bot B)
         {
             Console.WriteLine("-----------------------------");
-            Console.WriteLine(B.PrintHand());
+            Console.WriteLine(B.GetHandString());
             Console.WriteLine("-----------------------------\n");
             DominoeTile res;
             // @TODO Eliminar el dummyMove
@@ -139,7 +139,7 @@ namespace Dominoes.ConsoleUI
            //else
             res=B.MakeAMove(DominoGame);
 
-            if (res == null) Console.WriteLine("El jugador " + (B.PlayerId+1).ToString() + " No va.\n");
+            if (res == null) Console.WriteLine("El jugador " + (B.Id+1).ToString() + " No va.\n");
             return res;
         }
 
@@ -153,10 +153,10 @@ namespace Dominoes.ConsoleUI
 
         public void PrintHands()
         {
-            Console.WriteLine("P1:  " + P1.PrintHand());
-            Console.WriteLine("P2:  " + P2.PrintHand());
-            Console.WriteLine("P3:  " + P3.PrintHand());
-            Console.WriteLine("P4:  " + P4.PrintHand());
+            Console.WriteLine("P1:  " + P1.GetHandString());
+            Console.WriteLine("P2:  " + P2.GetHandString());
+            Console.WriteLine("P3:  " + P3.GetHandString());
+            Console.WriteLine("P4:  " + P4.GetHandString());
         }
 
         public void PlayDomino() 

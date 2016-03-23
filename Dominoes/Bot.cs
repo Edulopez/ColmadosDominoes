@@ -17,7 +17,7 @@ namespace Dominoes
         /// <summary>
         /// Maximun depth in the recursion algorithm that simulates the knowledge of the bot
         /// </summary>
-        readonly int RecursiveCalls;
+        readonly int MaxRecursiveCalls;
 
         /// <summary>
         /// Dynamic programing memo
@@ -28,13 +28,13 @@ namespace Dominoes
         /// Constructor of the bot
         /// </summary>
         /// <param name="StartHand">Initial Dominoes Tiles in the hand</param>
-        /// <param name="TypeOfPlayer"></param>
-        /// <param name="_idPlayer">Unique Id of the player</param>
-        /// <param name="Level">Level of knowledge</param>
-        public Bot(List<Dominoes.DominoeTile> StartHand, int TypeOfPlayer, int _idPlayer , int Level = 11): base(StartHand, TypeOfPlayer, _idPlayer)
+        /// <param name="Type"></param>
+        /// <param name="PlayerId">Unique Id of the player</param>
+        /// <param name="LevelofKnowledge">Level of knowledge</param>
+        public Bot(List<Dominoes.DominoeTile> StartHand, int Type, int PlayerId , int LevelofKnowledge = 11): base(StartHand, Type, PlayerId)
         {
             dpHashTable = new Hashtable();
-            RecursiveCalls = Level;
+            MaxRecursiveCalls = LevelofKnowledge;
             //AvailableDominoes.Sort();
             //Hand.Sort();
         }
@@ -51,10 +51,10 @@ namespace Dominoes
             for (int i = 0; i < Hand.Count; ++i)
                 pointsInHand += Hand[i].TopNumber + Hand[i].BottomNumber;
 
-            for (int i = 0; i < EnemysHandCount.Length; ++i)
-                if (i != PlayerId)
+            for (int i = 0; i < EnemiesHandCount.Length; ++i)
+                if (i != Id)
                 {
-                    if(EnemysHandCount[i]==0) return DUMMYVAL;
+                    if(EnemiesHandCount[i]==0) return DUMMYVAL;
                 }
 
             return pointsInHand;
@@ -69,7 +69,7 @@ namespace Dominoes
         {
             
             string idx;
-            idx = PrintHand(false,"");
+            idx = GetHandString(false, "");
 
             string map = "";
             LinkedListNode<Dominoes.DominoeTile> Node = CurrentGame.First;
@@ -108,7 +108,7 @@ namespace Dominoes
                     Hand.RemoveAt(0);
                     if(CanIMove(CurrentGame,DominoInUse,DominoBoardSide.RigthSide)){
                         CurrentGame.AddLast(SetPositionOfDomino(CurrentGame, DominoInUse, DominoBoardSide.RigthSide));
-                        TempValue = GetBestMove(CurrentGame, 0, RecursiveCalls, PlayerId + 1);
+                        TempValue = GetBestMove(CurrentGame, 0, MaxRecursiveCalls, Id + 1);
                         CurrentGame.RemoveLast();
                         //Console.WriteLine("En la derecha La ficha " + DominoInUse.GetDominoString(true)+ " Tiene  " + TempValue);
                     }
@@ -121,7 +121,7 @@ namespace Dominoes
                     if (CanIMove(CurrentGame, DominoInUse, DominoBoardSide.LeftSide))
                     {
                         CurrentGame.AddFirst(SetPositionOfDomino(CurrentGame, DominoInUse, DominoBoardSide.LeftSide));
-                        TempValue = GetBestMove(CurrentGame, 0, RecursiveCalls, PlayerId + 1);
+                        TempValue = GetBestMove(CurrentGame, 0, MaxRecursiveCalls, Id + 1);
                         CurrentGame.RemoveFirst();
                         //Console.WriteLine("En la izquierda La ficha " + DominoInUse.GetDominoString(true) + " Tiene  " + TempValue);
                     }
@@ -141,7 +141,7 @@ namespace Dominoes
                //Console.Read();
             }
 
-            EnemysHandCount[PlayerId]--;
+            EnemiesHandCount[Id]--;
             return DominoInUse;
         }
 
@@ -175,12 +175,12 @@ namespace Dominoes
             _IdPlayer %= 4;
 
             int stop;
-            if (_IdPlayer != PlayerId) stop = AvailableDominoes.Count;
+            if (_IdPlayer != Id) stop = AvailableDominoes.Count;
             else stop = Hand.Count;
 
             for (int i = 0; i < stop; i++)
             {
-                if (_IdPlayer == PlayerId)
+                if (_IdPlayer == Id)
                 {
                     DominoInUse = Hand[0];
                     Hand.RemoveAt(0);
@@ -193,27 +193,27 @@ namespace Dominoes
 
                 if (CanIMove(CurrentGame,DominoInUse,DominoBoardSide.RigthSide))
                 {
-                    EnemysHandCount[_IdPlayer]--;
+                    EnemiesHandCount[_IdPlayer]--;
                     CurrentGame.AddLast(SetPositionOfDomino(CurrentGame, DominoInUse, DominoBoardSide.RigthSide));
                     tempValue = GetBestMove(CurrentGame, depth + 1, finalDepth - 1,_IdPlayer+1);
                     CurrentGame.RemoveLast();
 
-                    EnemysHandCount[_IdPlayer]++;
+                    EnemiesHandCount[_IdPlayer]++;
                     if ((value) > (tempValue)) { value = (tempValue); }
                 }
 
                 else if (CanIMove(CurrentGame, DominoInUse, DominoBoardSide.LeftSide))
                 {
-                    EnemysHandCount[_IdPlayer]--;
+                    EnemiesHandCount[_IdPlayer]--;
                     CurrentGame.AddFirst(SetPositionOfDomino(CurrentGame, DominoInUse, DominoBoardSide.LeftSide));
                     tempValue = GetBestMove(CurrentGame, depth + 1, finalDepth - 1, _IdPlayer + 1);
                     CurrentGame.RemoveFirst();
 
-                    EnemysHandCount[_IdPlayer]++;
+                    EnemiesHandCount[_IdPlayer]++;
                     if ((value) > (tempValue)) { value = (tempValue); }
                 }
 
-                if (_IdPlayer == PlayerId)
+                if (_IdPlayer == Id)
                     Hand.Add(DominoInUse);
                 else
                     AvailableDominoes.Add(DominoInUse);

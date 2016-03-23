@@ -9,53 +9,65 @@ namespace Dominoes
 
     public class Player
     {
-        public const int MaxDiominoesOnHand = 7;
+        public const int MaxDominoesOnHand = 7;
+
+        public readonly int Id;
+        public readonly int PlayerType;
+
         public List<Dominoes.DominoeTile> Hand { get; set; }
         public List<Dominoes.DominoeTile> AvailableDominoes { get; set; }
         public List<bool[]> Dominos_EnemyDontHave { get; set; }
         public List<List<int>> Dominos_EnemyHave { get; set; }
 
-        public readonly int PlayerType;
-        public int[] EnemysHandCount;
-        public readonly int PlayerId;
+        public int[] EnemiesHandCount;
 
 
         public Player(List<Dominoes.DominoeTile> StartHand, int _PlayerType, int _idPlayer)
         {
             Hand = StartHand;
-            PlayerId = _idPlayer;
+            Id = _idPlayer;
             PlayerType = _PlayerType;
 
             AvailableDominoes = GetAvaiableDominoes(StartHand);
-            Dominos_EnemyDontHave = new List<bool[]>();
+            Dominos_EnemyDontHave = GetDominosEnemyDontHave();
+
+            Dominos_EnemyHave = new List<List<int>>();
+            EnemiesHandCount = GetEnemiesHandCount(_idPlayer);
+        }
+        private static List<bool[]>  GetDominosEnemyDontHave()
+        {
+            var res = new List<bool[]>();
             for (int i = 0; i < 4; i++)
             {
-                Dominos_EnemyDontHave.Add( new bool[7]);
+                res.Add(new bool[MaxDominoesOnHand]);
             }
-            Dominos_EnemyHave = new List<List<int>>();
-
-            EnemysHandCount = new int[4];
+            return res;
+        }
+        private static int[] GetEnemiesHandCount(int currentPlayerId)
+        {
+            var res =new int[4];
 
             for (int i=0 ; i<4 ; i++)
             {
-                if (i!= PlayerId)
+                if (i != currentPlayerId)
                 {
-                    EnemysHandCount[i]=7;
+                    res[i] = MaxDominoesOnHand;
                 }
             }
+            return res;
         }
 
         static public List<Dominoes.DominoeTile> GetAvaiableDominoes(List<Dominoes.DominoeTile> UsedDominoes) 
         {
             List<Dominoes.DominoeTile> Res = new List<Dominoes.DominoeTile>();
-            for (int i = 0; i < MaxDiominoesOnHand; i++)
+            for (int i = 0; i < MaxDominoesOnHand; i++)
             {
-                for (int j = i; j < MaxDiominoesOnHand; j++)
+                for (int j = i; j < MaxDominoesOnHand; j++)
                 {
                     bool can = false;
-                    for (int q = 0; q < UsedDominoes.Count; q++)
+                    for (int k = 0; k < UsedDominoes.Count; k++)
                     {
-                        can = (UsedDominoes[q].Contains(i) && UsedDominoes[q].Contains(j));
+                        can = (UsedDominoes[k].Contains(i) && UsedDominoes[k].Contains(j));
                         if (can) break;
                     }
                     if (can) Res.Add(new Dominoes.DominoeTile(i, j));
@@ -76,19 +88,22 @@ namespace Dominoes
             return false;
         }
 
-        public string PrintHand()
+        public string GetHandString()
         {
-            return PrintHand(true);
+            return GetHandString(true);
         }
 
-        public string PrintHand(bool Separator, string SpaceBetweenTiles =" ")
+        public string GetHandString(bool Separator, string SpaceBetweenTiles = " ")
         {
-            string res = "";
+            bool UseSeparator = !string.IsNullOrEmpty(SpaceBetweenTiles);
+            StringBuilder res = new StringBuilder();
             for (int i = 0; i < Hand.Count; i++)
             {
-                res += Hand[i].GetDominoString(Separator) + SpaceBetweenTiles;
+                res.Append(Hand[i].GetDominoString(Separator));
+                if(UseSeparator)
+                    res.Append(SpaceBetweenTiles);
             }
-            return res;
+            return res.ToString();
         }
 
         public DominoeTile MakeAMove(LinkedList<Dominoes.DominoeTile> CurrentGame, int HandDominoId, char Side)
@@ -149,7 +164,7 @@ namespace Dominoes
                 return;
             }
 
-            EnemysHandCount[PlayerId]--;
+            EnemiesHandCount[PlayerId]--;
             for (int i = 0; i < AvailableDominoes.Count(); i++)
             {
                 if (AvailableDominoes[i] == EnemyDomino)
