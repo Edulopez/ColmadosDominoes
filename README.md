@@ -5,7 +5,7 @@
 Dominoes Game with players who play according a given level of knowledge.
 
 
-The main focus on this project is the creation of Bots that use Artificial Intelligence (AI) to play. UI will be needed to complete the whole game.
+The main focus on this project is to practice the GitHub Collaboration, Projects organization and the creation of Bots that use Artificial Intelligence (AI) to play. 
 
 Machine Learning Project will be next.
 
