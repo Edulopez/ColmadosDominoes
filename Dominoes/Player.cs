@@ -29,12 +29,12 @@ namespace Dominoes
             PlayerType = _PlayerType;
 
             AvailableDominoes = GetAvaiableDominoes(StartHand);
-            Dominos_EnemyDontHave = GetDominosEnemyDontHave();
-
+            Dominos_EnemyDontHave = GetDominosEnemyDontHaveInitialValue();
             Dominos_EnemyHave = new List<List<int>>();
-            EnemiesHandCount = GetEnemiesHandCount(_idPlayer);
+            EnemiesHandCount = GetEnemiesHandCountInitialValue(_idPlayer);
         }
-        private static List<bool[]>  GetDominosEnemyDontHave()
+
+        private static List<bool[]>  GetDominosEnemyDontHaveInitialValue()
         {
             var res = new List<bool[]>();
             for (int i = 0; i < 4; i++)
@@ -43,7 +43,7 @@ namespace Dominoes
             }
             return res;
         }
-        private static int[] GetEnemiesHandCount(int currentPlayerId)
+        private static int[] GetEnemiesHandCountInitialValue(int currentPlayerId)
         {
             var res =new int[4];
 
