@@ -28,22 +28,13 @@ namespace Dominoes
             }
         }
 
-        /// <summary>
-        /// Constructor of the Tile
-        /// </summary>
-        /// <param name="TopN">Top number</param>
-        /// <param name="BotN">Bottom Number</param>
-        public DominoeTile(int TopN, int BotN)
+        public DominoeTile(int _TopNumber, int _BottomNumber)
         {
-            TopNumber = TopN;
-            BottomNumber = BotN;
+            TopNumber = _TopNumber;
+            BottomNumber = _BottomNumber;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="Separator"></param>
-        /// <returns></returns>
+       
         public string GetDominoString( bool Separator = false)
         {
             string sep = "";
@@ -51,21 +42,12 @@ namespace Dominoes
             return TopNumber.ToString() + sep + BottomNumber.ToString();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="SeparatorChar"></param>
-        /// <returns></returns>
         string GetDominoString(char SeparatorChar)
         {
             string sep = SeparatorChar.ToString();
             return TopNumber.ToString() + sep + BottomNumber.ToString();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
         public DominoeTile SwipedDomino()
         {
             return new DominoeTile(BottomNumber, TopNumber);
@@ -74,94 +56,53 @@ namespace Dominoes
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="D"></param>
+        /// <param name="Tile"></param>
         /// <param name="side"></param>
         /// <returns></returns>
-        public DominoeTile GetDominoInPosition(DominoeTile D, DominoBoardSides side)
+        public DominoeTile GetDominoInPosition(DominoeTile Tile, DominoBoardSides side)
         {
-            if (D == null) return null;
+            if (Tile == null) return null;
 
             if (side == DominoBoardSides.Rigth)
             {
-                if (D.BottomNumber == this.TopNumber)
+                if (Tile.BottomNumber == this.TopNumber)
                     return this;
-                if (D.BottomNumber == this.BottomNumber)
+                if (Tile.BottomNumber == this.BottomNumber)
                     return this.SwipedDomino();
             }
             else //DominoBoardSide.LeftSide
             {
-                if (D.TopNumber == this.TopNumber)
+                if (Tile.TopNumber == this.TopNumber)
                     return this.SwipedDomino();
-                if (D.TopNumber == this.BottomNumber)
+                if (Tile.TopNumber == this.BottomNumber)
                     return this;
             }
             return null;
         }
 
         /// <summary>
-        /// 
+        ///  Check if two tiles match
         /// </summary>
-        /// <param name="b"></param>
-        /// <returns></returns>
-        public bool Match(DominoeTile b)
+        /// <param name="Tile"></param>
+        /// <returns>true if they match</returns>
+        public bool Match(DominoeTile Tile)
         {
-            if (b == null) return false;
+            if (Tile == null) return false;
             return (
-                    TopNumber == b.TopNumber
-                || TopNumber == b.BottomNumber
-                || BottomNumber == b.TopNumber
-                || BottomNumber == b.BottomNumber
+                    TopNumber == Tile.TopNumber
+                || TopNumber == Tile.BottomNumber
+                || BottomNumber == Tile.TopNumber
+                || BottomNumber == Tile.BottomNumber
                 );
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="number"></param>
-        /// <returns></returns>
         public bool Contains(int number)
         {
             return (number == TopNumber || number == BottomNumber);
         }
 
 
-        #region "Operators"
-
-        //public static bool operator ==(DominoeTile a, int b)
-        //{
-        //    return
-        //    (
-        //        (a.TopNumber == b) || (a.BottomNumber == b)
-        //    );
-        //}
-        //public static bool operator !=(DominoeTile a, int b)
-        //{
-        //    return
-        //    (
-        //        (a.TopNumber != b) && (a.BottomNumber != b)
-        //    );
-        //}
-        //public static bool operator ==(DominoeTile a, DominoeTile b)
-        //{
-
-        //    return
-        //    (
-        //        ((a.TopNumber == b.TopNumber) && (a.BottomNumber == b.BottomNumber))
-        //        ||
-        //        ((a.BottomNumber == b.TopNumber) && (a.TopNumber == b.BottomNumber))
-        //    );
-        //}
-        //public static bool operator !=(DominoeTile a, DominoeTile b)
-        //{
-        //    return
-        //    (
-        //        ((a.TopNumber != b.TopNumber) && (a.BottomNumber != b.BottomNumber))
-        //        ||
-        //        ((a.BottomNumber != b.TopNumber) && (a.TopNumber != b.BottomNumber))
-        //    );
-        //}
-
-        #endregion
+   
 
 
 
