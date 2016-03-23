@@ -12,21 +12,28 @@ namespace Dominoes
         public const int MaxDominoesOnHand = 7;
 
         public readonly int Id;
-        public readonly int PlayerType;
 
         public List<Dominoes.DominoeTile> Hand { get; set; }
         public List<Dominoes.DominoeTile> AvailableDominoes { get; set; }
         public List<bool[]> Dominos_EnemyDontHave { get; set; }
         public List<List<int>> Dominos_EnemyHave { get; set; }
 
+        public int PointsInHand
+        {
+            get
+            {
+                return Hand == null? 0 : Hand.Sum(tile => tile.Points);
+            }
+            private set;
+        }
+
         public int[] EnemiesHandCount;
 
 
-        public Player(List<Dominoes.DominoeTile> StartHand, int _PlayerType, int _idPlayer)
+        public Player(List<Dominoes.DominoeTile> StartHand, int _idPlayer)
         {
             Hand = StartHand;
             Id = _idPlayer;
-            PlayerType = _PlayerType;
 
             AvailableDominoes = GetAvaiableDominoes(StartHand);
             Dominos_EnemyDontHave = GetDominosEnemyDontHaveInitialValue();
@@ -74,6 +81,51 @@ namespace Dominoes
                 }
             }
             return Res;
+        }
+
+        /// <summary>
+        /// Check if you can move a dominoe in a desired position
+        /// </summary>
+        /// <param name="CurrentGame">Current Dominoes Tiles played in the game</param>
+        /// <param name="DominoInUse">Dominoe tile that you want to move</param>
+        /// <param name="side">Side wich you want to move</param>
+        /// <returns>True if you can move</returns>
+        protected bool CanIMove(LinkedList<DominoeTile> CurrentGame, DominoeTile DominoInUse, DominoBoardSides side)
+        {
+            if (CurrentGame.Count == 0) return true;
+
+            if (side == DominoBoardSides.Rigth)
+            {
+                if (CurrentGame.Last.Value.BottomNumber == DominoInUse.TopNumber || CurrentGame.Last.Value.BottomNumber == DominoInUse.BottomNumber)
+                    return true;
+            }
+            else
+            {
+                if (CurrentGame.First.Value.TopNumber == DominoInUse.TopNumber || CurrentGame.First.Value.TopNumber == DominoInUse.BottomNumber)
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        ///   Get the domino in the desired position wich will be played
+        /// </summary>
+        /// <param name="CurrentGame">Current Dominoes Tiles played in the game</param>
+        /// <param name="DominoInUse">Domino that will be used</param>
+        /// <param name="Side">Side of the board that you will play</param>
+        /// <returns>Dominoe in the desired position, null if you cant play it</returns>
+        protected DominoeTile SetPositionOfDomino(LinkedList<DominoeTile> CurrentGame, DominoeTile DominoInUse, DominoBoardSides Side)
+        {
+            if (CurrentGame.Count == 0) return DominoInUse;
+
+            if (Side == DominoBoardSides.Rigth)
+            {
+                return DominoInUse.GetDominoInPosition(CurrentGame.Last.Value, Side);
+            }
+            else //DominoBoardSide.LeftSide
+            {
+                return DominoInUse.GetDominoInPosition(CurrentGame.First.Value, Side);
+            }
         }
 
         public bool CanPlay(LinkedList<Dominoes.DominoeTile> CurrentGame)

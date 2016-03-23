@@ -77,11 +77,11 @@ namespace Dominoes
         /// <param name="D"></param>
         /// <param name="side"></param>
         /// <returns></returns>
-        public DominoeTile GetDominoInPosition(DominoeTile D, DominoBoardSide side)
+        public DominoeTile GetDominoInPosition(DominoeTile D, DominoBoardSides side)
         {
             if (D == null) return null;
 
-            if (side == DominoBoardSide.RigthSide)
+            if (side == DominoBoardSides.Rigth)
             {
                 if (D.BottomNumber == this.TopNumber)
                     return this;
