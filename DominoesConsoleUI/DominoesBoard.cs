@@ -7,12 +7,12 @@ using System.Diagnostics;
 using System.Threading;
 using Dominoes;
 
-namespace DominoesConsoleUI
+namespace Dominoes.ConsoleUI
 {
     class DominoesBoard
     {
 
-        Bot P1;
+        Player P1;
         Bot P2, P3, P4;
         List<string> TimesP = new List<string>();
         LinkedList<Dominoes.DominoeTile> DominoGame;
@@ -139,7 +139,7 @@ namespace DominoesConsoleUI
            //else
             res=B.MakeAMove(DominoGame);
 
-            if (res == null) Console.WriteLine("El jugador " + (B.idPlayer+1).ToString() + " No va.\n");
+            if (res == null) Console.WriteLine("El jugador " + (B.PlayerId+1).ToString() + " No va.\n");
             return res;
         }
 

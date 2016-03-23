@@ -52,7 +52,7 @@ namespace Dominoes
                 pointsInHand += Hand[i].TopNumber + Hand[i].BottomNumber;
 
             for (int i = 0; i < EnemysHandCount.Length; ++i)
-                if (i != idPlayer)
+                if (i != PlayerId)
                 {
                     if(EnemysHandCount[i]==0) return DUMMYVAL;
                 }
@@ -108,7 +108,7 @@ namespace Dominoes
                     Hand.RemoveAt(0);
                     if(CanIMove(CurrentGame,DominoInUse,DominoBoardSide.RigthSide)){
                         CurrentGame.AddLast(SetPositionOfDomino(CurrentGame, DominoInUse, DominoBoardSide.RigthSide));
-                        TempValue = GetBestMove(CurrentGame, 0, RecursiveCalls, idPlayer + 1);
+                        TempValue = GetBestMove(CurrentGame, 0, RecursiveCalls, PlayerId + 1);
                         CurrentGame.RemoveLast();
                         //Console.WriteLine("En la derecha La ficha " + DominoInUse.GetDominoString(true)+ " Tiene  " + TempValue);
                     }
@@ -121,7 +121,7 @@ namespace Dominoes
                     if (CanIMove(CurrentGame, DominoInUse, DominoBoardSide.LeftSide))
                     {
                         CurrentGame.AddFirst(SetPositionOfDomino(CurrentGame, DominoInUse, DominoBoardSide.LeftSide));
-                        TempValue = GetBestMove(CurrentGame, 0, RecursiveCalls, idPlayer + 1);
+                        TempValue = GetBestMove(CurrentGame, 0, RecursiveCalls, PlayerId + 1);
                         CurrentGame.RemoveFirst();
                         //Console.WriteLine("En la izquierda La ficha " + DominoInUse.GetDominoString(true) + " Tiene  " + TempValue);
                     }
@@ -141,7 +141,7 @@ namespace Dominoes
                //Console.Read();
             }
 
-            EnemysHandCount[idPlayer]--;
+            EnemysHandCount[PlayerId]--;
             return DominoInUse;
         }
 
@@ -175,12 +175,12 @@ namespace Dominoes
             _IdPlayer %= 4;
 
             int stop;
-            if (_IdPlayer != idPlayer) stop = AvailableDominoes.Count;
+            if (_IdPlayer != PlayerId) stop = AvailableDominoes.Count;
             else stop = Hand.Count;
 
             for (int i = 0; i < stop; i++)
             {
-                if (_IdPlayer == idPlayer)
+                if (_IdPlayer == PlayerId)
                 {
                     DominoInUse = Hand[0];
                     Hand.RemoveAt(0);
@@ -213,7 +213,7 @@ namespace Dominoes
                     if ((value) > (tempValue)) { value = (tempValue); }
                 }
 
-                if (_IdPlayer == idPlayer)
+                if (_IdPlayer == PlayerId)
                     Hand.Add(DominoInUse);
                 else
                     AvailableDominoes.Add(DominoInUse);
