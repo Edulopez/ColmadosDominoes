@@ -7,12 +7,12 @@ using System.Diagnostics;
 using System.Threading;
 using Dominoes;
 
-namespace DominoesConsoleUI
+namespace Dominoes.ConsoleUI
 {
     class DominoesBoard
     {
 
-        Bot P1;
+        Player P1;
         Bot P2, P3, P4;
         List<string> TimesP = new List<string>();
         LinkedList<Dominoes.DominoeTile> DominoGame;
@@ -36,26 +36,26 @@ namespace DominoesConsoleUI
             {
                 L.Add(Q[i]);
             }
-            P1 = new Bot(L.ToArray().ToList(),1,0);
+            P1 = new Player(L.ToArray().ToList(),0);
             L.Clear();
             //L.Add(new Tuple<int,int>(
             for (int i = 7; i < 14; i++)
             {
                 L.Add(Q[i]);
             }
-            P2 = new Bot(L.ToArray().ToList(), -1,1);
+            P2 = new Bot(L.ToArray().ToList(), 1);
             L.Clear();
             for (int i = 14; i < 21; i++)
             {
                 L.Add(Q[i]);
             }
-            P3 = new Bot(L.ToArray().ToList(), -1,2);
+            P3 = new Bot(L.ToArray().ToList(), 2);
             L.Clear();
             for (int i = 21; i < 28; i++)
             {
                 L.Add(Q[i]);
             }
-            P4 = new Bot(L.ToArray().ToList(), -1,3);
+            P4 = new Bot(L.ToArray().ToList(), 3);
             L.Clear();
             Q.Clear();
             GC.Collect();
@@ -107,31 +107,41 @@ namespace DominoesConsoleUI
             if (!canPlay)
             {
                 Console.WriteLine("-----------------------------");
-                Console.WriteLine(P.PrintHand());
+                Console.WriteLine(P.GetHandString());
                 Console.WriteLine("-----------------------------\n No vas...");
+                Console.ReadKey();
                 Thread.Sleep(1500);
                 return null;
             }
 
             DominoeTile res = null;
             Console.WriteLine("-----------------------------");
-            Console.WriteLine(P.PrintHand());
-
+            Console.WriteLine(P.GetHandString());
             while (res == null)
             {
-                Console.WriteLine("-----------------------------\n Digita el lado y el id de la ficha.");
-                char side = Convert.ToChar(Console.ReadLine());
+                Thread.Sleep(1000);
+                Console.WriteLine("-----------------------------\n Digita el lado y el id de la ficha.\n");
+                var L = Console.ReadLine();
+
+                char SiteLetter = Convert.ToChar(L);
+                DominoBoardSides Side = DominoBoardSides.Left;
+                if (SiteLetter.ToString().ToUpper() == "L")
+                    Side = DominoBoardSides.Left;
+                else if (SiteLetter.ToString().ToUpper() == "R")
+                    Side = DominoBoardSides.Rigth;
+
+                Thread.Sleep(1000);
                 int id = Convert.ToInt32(Console.ReadLine());
-                res =P.MakeAMove(DominoGame, id, (char)side);
+                res = P.MakeAMove(DominoGame, id, Side);
             }
             return res;
         }
 
         DominoeTile PlayerPlaying(Bot B)
         {
-            Console.WriteLine("-----------------------------");
-            Console.WriteLine(B.PrintHand());
-            Console.WriteLine("-----------------------------\n");
+            //Console.WriteLine("-----------------------------");
+            //Console.WriteLine(B.GetHandString());
+            //Console.WriteLine("-----------------------------\n");
             DominoeTile res;
             // @TODO Eliminar el dummyMove
            // if (B.idPlayer == 0)
@@ -139,24 +149,16 @@ namespace DominoesConsoleUI
            //else
             res=B.MakeAMove(DominoGame);
 
-            if (res == null) Console.WriteLine("El jugador " + (B.idPlayer+1).ToString() + " No va.\n");
+            if (res == null) Console.WriteLine("El jugador " + (B.Id+1).ToString() + " No va.\n");
             return res;
-        }
-
-        public int DoblesCant( Player Pl)
-        {
-            int dbs = 0;
-            for (int i = 0; i < P1.Hand.Count; i++)
-                if (Pl.Hand[i].TopNumber == Pl.Hand[i].BottomNumber) dbs++;
-            return dbs;
-        }
+        }     
 
         public void PrintHands()
         {
-            Console.WriteLine("P1:  " + P1.PrintHand());
-            Console.WriteLine("P2:  " + P2.PrintHand());
-            Console.WriteLine("P3:  " + P3.PrintHand());
-            Console.WriteLine("P4:  " + P4.PrintHand());
+            Console.WriteLine("P1:  " + P1.GetHandString());
+            Console.WriteLine("P2:  " + P2.GetHandString());
+            Console.WriteLine("P3:  " + P3.GetHandString());
+            Console.WriteLine("P4:  " + P4.GetHandString());
         }
 
         public void PlayDomino() 
@@ -178,7 +180,7 @@ namespace DominoesConsoleUI
                 {
                     Console.WriteLine("||||||||||| Juego terminado|||||||||||");
                     PrintGame();
-                    PrintHands();
+                    //PrintHands();
                     for (int q = 0; q < TimesP.Count;q++) Console.WriteLine(TimesP[q]);
                     Console.WriteLine("Con un aproximado de:" + " P2" + P2.dpHashTable.Count + " P3 " + P3.dpHashTable.Count + " P4 " + P4.dpHashTable.Count+" Nodos");
                     Console.Read();
@@ -191,9 +193,9 @@ namespace DominoesConsoleUI
                 Console.WriteLine("||||||||||| Esta jugando el jugador " + (i + 1).ToString() + " |||||||||||");
                 PrintGame();
 
-                PrintHands();
+                //PrintHands();
                 DominoeTile res = null;
-                Console.Read();
+                //
                 if (i == 0)
                 {
                     res= PlayerPlaying(P1);
@@ -202,25 +204,28 @@ namespace DominoesConsoleUI
                 }
                 else if (i == 1)
                 {
+                    Console.ReadLine();
                     res = PlayerPlaying(P2);
                     if (res == null) EndGame++;
                     else EndGame = 0;
                 }
                 else if (i == 2)
                 {
+                    Console.ReadLine();
                     res = PlayerPlaying(P3);
                     if (res == null) EndGame++;
                     else EndGame = 0;
                 }
                 else//if (i==3)
                 {
+                    Console.ReadLine();
                     res = PlayerPlaying(P4);
                     if (res == null) EndGame++;
                     else EndGame = 0;
                 }
                 PlayersLearn(i, res);
                 //Console.Read();
-   //             Thread.Sleep(1000);
+                Thread.Sleep(1000);
             }
         }
 

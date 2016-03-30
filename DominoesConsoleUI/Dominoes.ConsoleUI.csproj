@@ -7,8 +7,8 @@
     <ProjectGuid>{39EB406F-99C0-473A-A4D2-E294F262F6B8}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DominoesConsoleUI</RootNamespace>
-    <AssemblyName>DominoesConsoleUI</AssemblyName>
+    <RootNamespace>Dominoes.ConsoleUI</RootNamespace>
+    <AssemblyName>Dominoes.ConsoleUI</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

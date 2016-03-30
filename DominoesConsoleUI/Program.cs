@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Dominoes;
-namespace DominoesConsoleUI
+namespace Dominoes.ConsoleUI
 {
     class Program
     {
@@ -13,7 +13,7 @@ namespace DominoesConsoleUI
             List<Tuple<int, int>> l = new List<Tuple<int, int>>();
             l.Add(domino);
 
-            DominoesConsoleUI.DominoesBoard Board = new DominoesBoard();
+            Dominoes.ConsoleUI.DominoesBoard Board = new DominoesBoard();
 
             Board.PrintGame();
             Board.PlayDomino();

@@ -48,8 +48,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bot.cs" />
-    <Compile Include="cDominoeTile.cs" />
-    <Compile Include="eDominoBoardSide.cs" />
+    <Compile Include="Entities\DominoeTile.cs" />
+    <Compile Include="Enums\eDominoBoardSide.cs" />
     <Compile Include="Player.cs" />
   </ItemGroup>
   <ItemGroup>

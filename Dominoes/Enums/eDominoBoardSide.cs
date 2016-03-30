@@ -8,9 +8,9 @@ namespace Dominoes
     /// <summary>
     /// Enum of the dominoes Board side
     /// </summary>
-    public enum DominoBoardSide
+    public enum DominoBoardSides
     {
-        LeftSide = 1,
-        RigthSide = 2
+        Left = 1,
+        Rigth = 2
     };
 }

@@ -9,59 +9,122 @@ namespace Dominoes
 
     public class Player
     {
+        public const int MaxDominoesOnHand = 7;
+
+        public readonly int Id;
 
         public List<Dominoes.DominoeTile> Hand { get; set; }
         public List<Dominoes.DominoeTile> AvailableDominoes { get; set; }
         public List<bool[]> Dominos_EnemyDontHave { get; set; }
         public List<List<int>> Dominos_EnemyHave { get; set; }
 
-        public readonly int TypePlayer;
-        public int[] EnemysHandCount;
-        public readonly int idPlayer;
-
-
-        public Player(List<Dominoes.DominoeTile> StartHand, int TypeOfPlayer, int _idPlayer)
+        public int PointsInHand
         {
-            Hand = StartHand;
-            idPlayer = _idPlayer;
-            TypePlayer = TypeOfPlayer;
-
-            AvailableDominoes = GetAvaiableDominoes(StartHand);
-            Dominos_EnemyDontHave = new List<bool[]>();
-            for (int i = 0; i < 4; i++)
+            get
             {
-                Dominos_EnemyDontHave.Add( new bool[7]);
-            }
-            Dominos_EnemyHave = new List<List<int>>();
-
-            EnemysHandCount = new int[4];
-
-            for (int i=0 ; i<4 ; i++)
-            {
-                if (i!= idPlayer)
-                {
-                    EnemysHandCount[i]=7;
-                }
+                return Hand == null? 0 : Hand.Sum(tile => tile.Points);
             }
         }
 
-        static public List<Dominoes.DominoeTile> GetAvaiableDominoes(List<Dominoes.DominoeTile> UsedDominoes)
+        public int[] EnemiesHandCount;
+
+
+        public Player(List<Dominoes.DominoeTile> StartHand, int _idPlayer)
+        {
+            Hand = StartHand;
+            Id = _idPlayer;
+
+            AvailableDominoes = GetAvaiableDominoes(StartHand);
+            Dominos_EnemyDontHave = GetDominosEnemyDontHaveInitialValue();
+            Dominos_EnemyHave = new List<List<int>>();
+            EnemiesHandCount = GetEnemiesHandCountInitialValue(_idPlayer);
+        }
+
+        private static List<bool[]>  GetDominosEnemyDontHaveInitialValue()
+        {
+            var res = new List<bool[]>();
+            for (int i = 0; i < 4; i++)
+            {
+                res.Add(new bool[MaxDominoesOnHand]);
+            }
+            return res;
+        }
+        private static int[] GetEnemiesHandCountInitialValue(int currentPlayerId)
+        {
+            var res =new int[4];
+
+            for (int i=0 ; i<4 ; i++)
+            {
+                if (i != currentPlayerId)
+                {
+                    res[i] = MaxDominoesOnHand;
+                }
+            }
+            return res;
+        }
+
+        static public List<Dominoes.DominoeTile> GetAvaiableDominoes(List<Dominoes.DominoeTile> UsedDominoes) 
         {
             List<Dominoes.DominoeTile> Res = new List<Dominoes.DominoeTile>();
-            for (int i=0 ; i<7 ; i++)
+            for (int i = 0; i < MaxDominoesOnHand; i++)
             {
-                for (int j=i; j<7 ; j++)
+                for (int j = i; j < MaxDominoesOnHand; j++)
                 {
                     bool can = false;
-                    for (int q = 0; q < UsedDominoes.Count; q++)
+                    for (int k = 0; k < UsedDominoes.Count; k++)
                     {
-                        can = (UsedDominoes[q].Contains(i) && UsedDominoes[q].Contains(j));
+                        can = (UsedDominoes[k].Contains(i) && UsedDominoes[k].Contains(j));
                         if (can) break;
                     }
                     if (can) Res.Add(new Dominoes.DominoeTile(i, j));
                 }
             }
             return Res;
+        }
+
+        /// <summary>
+        /// Check if you can move a dominoe in a desired position
+        /// </summary>
+        /// <param name="CurrentGame">Current Dominoes Tiles played in the game</param>
+        /// <param name="DominoInUse">Dominoe tile that you want to move</param>
+        /// <param name="side">Side wich you want to move</param>
+        /// <returns>True if you can move</returns>
+        protected bool DominoTileCanBePlayed(LinkedList<DominoeTile> CurrentGame, DominoeTile DominoInUse, DominoBoardSides side)
+        {
+            if (CurrentGame.Count == 0) return true;
+
+            if (side == DominoBoardSides.Rigth)
+            {
+                if (CurrentGame.Last.Value.BottomNumber == DominoInUse.TopNumber || CurrentGame.Last.Value.BottomNumber == DominoInUse.BottomNumber)
+                    return true;
+            }
+            else
+            {
+                if (CurrentGame.First.Value.TopNumber == DominoInUse.TopNumber || CurrentGame.First.Value.TopNumber == DominoInUse.BottomNumber)
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        ///   Get the domino in the desired position wich will be played
+        /// </summary>
+        /// <param name="CurrentGame">Current Dominoes Tiles played in the game</param>
+        /// <param name="DominoInUse">Domino that will be used</param>
+        /// <param name="Side">Side of the board that you will play</param>
+        /// <returns>Dominoe in the desired position, null if you cant play it</returns>
+        protected DominoeTile SetPositionOfDomino(LinkedList<DominoeTile> CurrentGame, DominoeTile DominoInUse, DominoBoardSides Side)
+        {
+            if (CurrentGame.Count == 0) return DominoInUse;
+
+            if (Side == DominoBoardSides.Rigth)
+            {
+                return DominoInUse.GetDominoInPosition(CurrentGame.Last.Value, Side);
+            }
+            else //DominoBoardSide.LeftSide
+            {
+                return DominoInUse.GetDominoInPosition(CurrentGame.First.Value, Side);
+            }
         }
 
         public bool CanPlay(LinkedList<Dominoes.DominoeTile> CurrentGame)
@@ -72,75 +135,80 @@ namespace Dominoes
             {
                 if ( CurrentGame.First.Value.Match(Hand[i]))
                     return true;
+                if (CurrentGame.Last.Value.Match(Hand[i]))
+                    return true;
             }
             return false;
         }
 
-        public string PrintHand()
+        public string GetHandString()
         {
-            return PrintHand(true);
+            return GetHandString(true);
         }
 
-        public string PrintHand(bool Separator, string SpaceBtw =" ")
+        public string GetHandString(bool Separator, string SpaceBetweenTiles = "       ")
         {
-            string res = "";
+            bool UseSeparator = !string.IsNullOrEmpty(SpaceBetweenTiles);
+            StringBuilder res = new StringBuilder();
             for (int i = 0; i < Hand.Count; i++)
             {
-                res += Hand[i].GetDominoString(Separator) + SpaceBtw;
+                res.Append(Hand[i].GetDominoString(Separator));
+                if(UseSeparator)
+                    res.Append(SpaceBetweenTiles);
             }
-            return res;
+            return res.ToString();
         }
 
-        public DominoeTile MakeAMove(LinkedList<Dominoes.DominoeTile> CurrentGame, int idHandDomino, char Side)
+        public DominoeTile MakeAMove(LinkedList<Dominoes.DominoeTile> CurrentGame, int HandDominoId, DominoBoardSides Side)
         {
-            
-            if (idHandDomino == 0 || (Side != 'L' && Side != 'R')) return null;
-            idHandDomino--;
+
+            if (HandDominoId == 0 || (Side != DominoBoardSides.Left && Side != DominoBoardSides.Rigth)) return null;
+            HandDominoId--;
 
             DominoeTile res = null;
             if (CurrentGame.Count==0)
             {
-                res = Hand[idHandDomino];
-                CurrentGame.AddLast(Hand[idHandDomino]);
-                Hand.RemoveAt(idHandDomino);
+                res = Hand[HandDominoId];
+                CurrentGame.AddLast(Hand[HandDominoId]);
+                Hand.RemoveAt(HandDominoId);
                 return res;
-            } 
+            }
 
-            if (Side == 'L')
+            if (Side == DominoBoardSides.Left)
             {
-                if (Hand[idHandDomino].BottomNumber == CurrentGame.First.Value.TopNumber)
+                if (Hand[HandDominoId].BottomNumber == CurrentGame.First.Value.TopNumber)
                 {
-                    res = Hand[idHandDomino];
+                    res = Hand[HandDominoId];
                     CurrentGame.AddFirst(res);
                 }
-                else if (Hand[idHandDomino].TopNumber == CurrentGame.First.Value.TopNumber)
+                else if (Hand[HandDominoId].TopNumber == CurrentGame.First.Value.TopNumber)
                 {
-                    res = Hand[idHandDomino].SwipedDomino();
+                    res = Hand[HandDominoId].SwipedDomino();
                     CurrentGame.AddFirst(res);
                 }
             }
-            else if (Side=='R')
+            else if (Side == DominoBoardSides.Rigth)
             {
-                if (Hand[idHandDomino].TopNumber == CurrentGame.Last.Value.BottomNumber)
+                if (Hand[HandDominoId].TopNumber == CurrentGame.Last.Value.BottomNumber)
                 {
-                    res = Hand[idHandDomino];
+                    res = Hand[HandDominoId];
                     CurrentGame.AddLast(res);
                 }
-                else if (Hand[idHandDomino].BottomNumber == CurrentGame.Last.Value.BottomNumber)
+                else if (Hand[HandDominoId].BottomNumber == CurrentGame.Last.Value.BottomNumber)
                 {
-                    res = Hand[idHandDomino].SwipedDomino();
+                    res = Hand[HandDominoId].SwipedDomino();
                     CurrentGame.AddLast(res);
                 }
             }
 
             if (res != null)
-                Hand.RemoveAt(idHandDomino);
+                Hand.RemoveAt(HandDominoId);
 
             return res;
         }
 
 
-        public void Learn(LinkedList<Dominoes.DominoeTile> Game, int _IdPlayer, Dominoes.DominoeTile EnemyDomino = null)
+        public void Learn(LinkedList<Dominoes.DominoeTile> Game, int PlayerId, Dominoes.DominoeTile EnemyDomino = null)
         {
             if (EnemyDomino == null)
             {
@@ -149,7 +217,7 @@ namespace Dominoes
                 return;
             }
 
-            EnemysHandCount[_IdPlayer]--;
+            EnemiesHandCount[PlayerId]--;
             for (int i = 0; i < AvailableDominoes.Count(); i++)
             {
                 if (AvailableDominoes[i] == EnemyDomino)
