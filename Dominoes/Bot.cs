@@ -33,17 +33,18 @@ namespace Dominoes
             //Hand.Sort();
         }
 
-        // retorna los puntos del juego.
+        
         /// <summary>
-        /// Get the points that you can win in a turn
+        /// Get points to evaluate the efectiveness of your current game and how much is left to win
         /// </summary>
         /// <param name="CurrentGame">Current Dominoes Tiles played in the game</param>
-        /// <returns>Points in the game</returns>
+        /// <returns>Points left to win</returns>
         private int Eval(LinkedList<Dominoes.DominoeTile> CurrentGame)
         {
             for (int i = 0; i < EnemiesHandCount.Length; ++i)
                 if (i != Id)
                 {
+                    // You lost
                     if(EnemiesHandCount[i]==0) return MaximunPoint;
                 }
 
@@ -72,7 +73,8 @@ namespace Dominoes
                 map.Append(Node.Value.GetDominoString(false));
                 Node = Node.Next;
             }
-            return map + idx;
+            map.Append(idx);
+            return map.ToString();
         }
 
         /// <summary>
@@ -86,16 +88,16 @@ namespace Dominoes
             if (!CanPlay(CurrentGame)) return null;
             else
             {
-                int stop = Hand.Count;
+                int HandCount = Hand.Count;
                 int value=MaximunPoint;
                 int TempValue=MaximunPoint;
                 int BestDomino=0;
                 int LOR=0;
-                for (int i = 0; i < stop; i++)
+                for (int i = 0; i < HandCount; i++)
                 {
                     DominoInUse = Hand[0];
                     Hand.RemoveAt(0);
-                    if(CanIMove(CurrentGame,DominoInUse,DominoBoardSides.Rigth)){
+                    if(DominoTileCanBePlayed(CurrentGame,DominoInUse,DominoBoardSides.Rigth)){
                         CurrentGame.AddLast(SetPositionOfDomino(CurrentGame, DominoInUse, DominoBoardSides.Rigth));
                         TempValue = GetBestMove(CurrentGame, 0, MaxRecursiveCalls, Id + 1);
                         CurrentGame.RemoveLast();
@@ -107,7 +109,7 @@ namespace Dominoes
                         BestDomino = i;
                         LOR = 1;
                     }
-                    if (CanIMove(CurrentGame, DominoInUse, DominoBoardSides.Left))
+                    if (DominoTileCanBePlayed(CurrentGame, DominoInUse, DominoBoardSides.Left))
                     {
                         CurrentGame.AddFirst(SetPositionOfDomino(CurrentGame, DominoInUse, DominoBoardSides.Left));
                         TempValue = GetBestMove(CurrentGame, 0, MaxRecursiveCalls, Id + 1);
@@ -123,10 +125,10 @@ namespace Dominoes
                    Hand.Add(DominoInUse);
                 }
 
-                char side;
-                if (LOR < 0) side = 'L';
-                else side = 'R';
-               DominoInUse= MakeAMove(CurrentGame, BestDomino + 1, side);
+                DominoBoardSides Side;
+                if (LOR < 0) Side = DominoBoardSides.Left;
+                else Side = DominoBoardSides.Rigth;
+               DominoInUse= MakeAMove(CurrentGame, BestDomino + 1, Side);
                //Console.Read();
             }
 
@@ -146,29 +148,40 @@ namespace Dominoes
         private int GetBestMove(LinkedList<DominoeTile> CurrentGame, int CurrentDepth, int FinalDepth, int PlayerId)
         {
             string idx = GetStringIndex(CurrentGame);
-            if (dpHashTable.Contains(idx) == true) return (int)dpHashTable[idx];
+            if (dpHashTable.Contains(idx) == true)
+                return (int)dpHashTable[idx];
 
             int value = Eval(CurrentGame);
-            if (FinalDepth == 0 || value == 1)
+
+            // If you win or if you cannot analize more
+            if (FinalDepth == 0 || value == 0)
             { 
                 dpHashTable.Add(idx, value); 
                 return value; 
             }
 
-            if (MaximunPoint == value) {
-                if (dpHashTable.Contains(idx) == false) dpHashTable.Add(idx, value);
-                return value; }
+            // If you lost
+            if (value == MaximunPoint)
+            {
+                dpHashTable.Add(idx, value);
+                return value; 
+            }
 
-            DominoeTile DominoInUse;
             int tempValue = MaximunPoint;
             PlayerId %= 4;
 
-            int stop;
-            if (PlayerId != Id) stop = AvailableDominoes.Count;
-            else stop = Hand.Count;
+            int MaxIterations;
+            if (PlayerId != Id) 
+                MaxIterations = AvailableDominoes.Count;
+            else 
+                MaxIterations = Hand.Count;
 
-            for (int i = 0; i < stop; i++)
+
+            DominoeTile DominoInUse;
+
+            for (int i = 0; i < MaxIterations; i++)
             {
+                // Remove a tile from the stack of availables depending of the current player playing. Actios will be taken with this tile
                 if (PlayerId == Id)
                 {
                     DominoInUse = Hand[0];
@@ -180,35 +193,41 @@ namespace Dominoes
                     AvailableDominoes.RemoveAt(0);
                 }
 
-                if (CanIMove(CurrentGame,DominoInUse,DominoBoardSides.Rigth))
+                bool DominoIsPlayed = false;
+
+                // Added the tile to the board and check the futures plays
+                if (DominoTileCanBePlayed(CurrentGame,DominoInUse,DominoBoardSides.Rigth))
                 {
+                    DominoIsPlayed = true;
                     EnemiesHandCount[PlayerId]--;
                     CurrentGame.AddLast(SetPositionOfDomino(CurrentGame, DominoInUse, DominoBoardSides.Rigth));
                     tempValue = GetBestMove(CurrentGame, CurrentDepth + 1, FinalDepth - 1,PlayerId+1);
                     CurrentGame.RemoveLast();
-
-                    EnemiesHandCount[PlayerId]++;
-                    if ((value) > (tempValue)) { value = (tempValue); }
                 }
-
-                else if (CanIMove(CurrentGame, DominoInUse, DominoBoardSides.Left))
+                else if (DominoTileCanBePlayed(CurrentGame, DominoInUse, DominoBoardSides.Left))
                 {
+                    DominoIsPlayed = true;
                     EnemiesHandCount[PlayerId]--;
                     CurrentGame.AddFirst(SetPositionOfDomino(CurrentGame, DominoInUse, DominoBoardSides.Left));
                     tempValue = GetBestMove(CurrentGame, CurrentDepth + 1, FinalDepth - 1, PlayerId + 1);
                     CurrentGame.RemoveFirst();
+                }
 
+                if(DominoIsPlayed)
+                {
                     EnemiesHandCount[PlayerId]++;
                     if ((value) > (tempValue)) { value = (tempValue); }
                 }
 
+                //Return the tile to the initial asumption
                 if (PlayerId == Id)
                     Hand.Add(DominoInUse);
                 else
                     AvailableDominoes.Add(DominoInUse);
             }
 
-            if(!dpHashTable.Contains(idx)) dpHashTable.Add(idx, value);
+            if(!dpHashTable.Contains(idx))
+                dpHashTable.Add(idx, value);
 
             return value;
         }

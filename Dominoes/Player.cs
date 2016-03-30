@@ -89,7 +89,7 @@ namespace Dominoes
         /// <param name="DominoInUse">Dominoe tile that you want to move</param>
         /// <param name="side">Side wich you want to move</param>
         /// <returns>True if you can move</returns>
-        protected bool CanIMove(LinkedList<DominoeTile> CurrentGame, DominoeTile DominoInUse, DominoBoardSides side)
+        protected bool DominoTileCanBePlayed(LinkedList<DominoeTile> CurrentGame, DominoeTile DominoInUse, DominoBoardSides side)
         {
             if (CurrentGame.Count == 0) return true;
 
@@ -135,6 +135,8 @@ namespace Dominoes
             {
                 if ( CurrentGame.First.Value.Match(Hand[i]))
                     return true;
+                if (CurrentGame.Last.Value.Match(Hand[i]))
+                    return true;
             }
             return false;
         }
@@ -144,7 +146,7 @@ namespace Dominoes
             return GetHandString(true);
         }
 
-        public string GetHandString(bool Separator, string SpaceBetweenTiles = " ")
+        public string GetHandString(bool Separator, string SpaceBetweenTiles = "       ")
         {
             bool UseSeparator = !string.IsNullOrEmpty(SpaceBetweenTiles);
             StringBuilder res = new StringBuilder();
@@ -157,10 +159,10 @@ namespace Dominoes
             return res.ToString();
         }
 
-        public DominoeTile MakeAMove(LinkedList<Dominoes.DominoeTile> CurrentGame, int HandDominoId, char Side)
+        public DominoeTile MakeAMove(LinkedList<Dominoes.DominoeTile> CurrentGame, int HandDominoId, DominoBoardSides Side)
         {
-            
-            if (HandDominoId == 0 || (Side != 'L' && Side != 'R')) return null;
+
+            if (HandDominoId == 0 || (Side != DominoBoardSides.Left && Side != DominoBoardSides.Rigth)) return null;
             HandDominoId--;
 
             DominoeTile res = null;
@@ -170,9 +172,9 @@ namespace Dominoes
                 CurrentGame.AddLast(Hand[HandDominoId]);
                 Hand.RemoveAt(HandDominoId);
                 return res;
-            } 
+            }
 
-            if (Side == 'L')
+            if (Side == DominoBoardSides.Left)
             {
                 if (Hand[HandDominoId].BottomNumber == CurrentGame.First.Value.TopNumber)
                 {
@@ -185,7 +187,7 @@ namespace Dominoes
                     CurrentGame.AddFirst(res);
                 }
             }
-            else if (Side=='R')
+            else if (Side == DominoBoardSides.Rigth)
             {
                 if (Hand[HandDominoId].TopNumber == CurrentGame.Last.Value.BottomNumber)
                 {
